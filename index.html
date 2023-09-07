@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+
+    header {
+            background-color: cyan;
+            color: black;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        #input {
+            padding:10px;
+            border: 2px solid black;
+            border-radius: 100px;
+            margin-top: 30px;
+         
+        }
+
+        #input:hover{
+            background-color: black;
+            color: white;
+        
+        }
+
+        #search {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: 2px solid black;
+            border-radius: 100px;
+            cursor: pointer;
+            margin-left: 10px;
+            
+            
+        }
+
+        #search:hover {
+            background-color: black;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+           position: absolute;
+           width: 1500px;
+           /* height: 10px; */
+           margin-top: 5px;
+           border-radius: 5px;
+            
+        }
+
+        .result {
+            margin: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        a{
+            color: white;
+
+        }
+
+        .search-result img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        #showmore{
+            margin-left: 500px;
+            margin-top: 100px;
+        }
+    </style>
+    <title>Image Search App</title>
+</head>
+<body>
+    <header>
+        <h1>Image Search App</h1>
+        <form id="form">
+            <input type="text" id="input" placeholder="Search here for images">
+            <button type="submit" id="search">Search</button>
+        </form>
+    </header>
+
+    <div class="results" id="results"></div>
+    <button id="showmore" style="display: none;">Show More</button>
+
+
+    <script>
+        const accessKey = "q3pgRr7gn792jvb-z7AQseuaoYdQyTPenX63H3tlGkg";
+        const srch = document.getElementById("form");
+        const searchInputbtn = document.getElementById("input");
+        const searchResultsbtn = document.getElementById("results");
+        const showMoreBtn = document.getElementById("showmore");
+
+        let inputData = "";
+        let page = 1;
+
+        async function searchImages() {
+            const accessKey='q3pgRr7gn792jvb-z7AQseuaoYdQyTPenX63H3tlGkg'
+            inputData = searchInputbtn.value;
+            const url = `https://api.unsplash.com/search/photos?page=${page}&query=${inputData}&client_id=${accessKey}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+            if (page === 1) {
+                searchResultsbtn.innerHTML = "";
+            }
+
+            const results = data.results;
+
+            results.forEach(result => {
+                const imageWrapper = document.createElement("div");
+                imageWrapper.classList.add("search-result");
+                const image = document.createElement("img");
+                image.src = result.urls.small;
+                image.alt = result.alt_description;
+                const imageLink = document.createElement("a");
+                imageLink.href = result.links.html;
+                imageLink.target = "_blank";
+                imageLink.textContent = result.alt_description;
+
+                imageWrapper.appendChild(image);
+                imageWrapper.appendChild(imageLink);
+                searchResultsbtn.appendChild(imageWrapper);
+            });
+
+            page++;
+
+            if (page > 1) {
+                showMoreBtn.style.display = "block";
+            }
+        }
+
+        srch.addEventListener("submit", (event) => {
+            event.preventDefault();
+            page = 1;
+            searchImages();
+        });
+
+        showMoreBtn.addEventListener("click", () => {
+            searchImages();
+        });
+    </script>
+</body>
+</html>
